@@ -1,12 +1,14 @@
 import { MaxTurnsExceededError, assistant, run, user } from "@openai/agents";
 import { z } from "zod";
 import { ibagradsAgent } from "@/lib/agent";
+import type { ChatContext } from "@/lib/chatContext";
 
 // Only the latest messages are sent to the model, so long chats stay fast and cheap.
 const HISTORY_LIMIT = 12;
 
-// The browser sends the whole chat (we have no database). Validate it, since anyone can call this URL.
+// The browser sends the whole chat (we have no chat database). Validate it, since anyone can call this URL.
 const bodySchema = z.object({
+  sessionId: z.string().min(8).max(100),
   messages: z
     .array(
       z.object({
@@ -29,9 +31,13 @@ export async function POST(request: Request) {
     .slice(-HISTORY_LIMIT)
     .map((message) => (message.role === "user" ? user(message.text) : assistant(message.text)));
 
+  // Tools read the session id from here, and may add a Pay button (payLink) for this reply.
+  const context: ChatContext = { sessionId: parsed.data.sessionId };
+
   try {
-    const result = await run(ibagradsAgent, history, { maxTurns: 6 });
-    return Response.json({ reply: result.finalOutput ?? "" });
+    // 8 turns: an admission can take a few tool calls (course, batch, create) before the reply.
+    const result = await run(ibagradsAgent, history, { maxTurns: 8, context });
+    return Response.json({ reply: result.finalOutput ?? "", link: context.payLink ?? null });
   } catch (error) {
     console.error("[chat] agent run failed", error);
 

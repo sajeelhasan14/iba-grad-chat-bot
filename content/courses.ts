@@ -12,10 +12,14 @@ export type Course = {
   modes: ("classroom" | "online")[];
   highlights: string[];
   registerUrl: string;
+  fee: number; // full-course fee in PKR (school classes: per month)
 };
 
-// Fees aren't in the data, so the agent refers students to a campus instead of guessing.
-export const FEE_NOTE = "Fees, course duration and class timings: refer the student to the campus contact details.";
+// DEMO DATA: the website has no fees, so the fees below are made up for the demo.
+export const FEE_NOTE =
+  "Fees are for the full course (school classes: per month). Students can confirm admission and pay online right here in the chat.";
+
+export const formatFee = (fee: number) => `Rs. ${fee.toLocaleString("en-US")}`;
 
 export const ONLINE_FEATURES = [
   "Daily live classes from experienced teachers, with focus on doubts and practice",
@@ -35,6 +39,7 @@ export const COURSES: Course[] = [
       "IBA interview briefing, then 3-4 mock interviews by IBA graduates and students",
     ],
     registerUrl: "https://ibagrads.com/bcat/",
+    fee: 45000,
   },
   {
     id: "ecat",
@@ -43,6 +48,7 @@ export const COURSES: Course[] = [
     modes: ["classroom", "online"],
     highlights: ["Weekday and weekend batches at different campuses"],
     registerUrl: "https://ibagrads.com/ecat/",
+    fee: 45000,
   },
   {
     id: "mdcat",
@@ -51,14 +57,16 @@ export const COURSES: Course[] = [
     modes: ["classroom", "online"],
     highlights: ["Weekday and weekend batches; a full-length batch at North Nazimabad"],
     registerUrl: "https://ibagrads.com/mdcat/",
+    fee: 50000,
   },
   {
     id: "sat",
     name: "SAT",
     preparesFor: ["SAT (for local and international universities, incl. IBA's SAT route)"],
     modes: ["classroom", "online"],
-    highlights: ["Batches for specific SAT attempts (e.g. May, August, October)"],
+    highlights: ["Batches for specific SAT attempts (e.g. March 2027)"],
     registerUrl: "https://ibagrads.com/class-room-courses/sat/",
+    fee: 60000,
   },
   {
     id: "gmat",
@@ -67,6 +75,7 @@ export const COURSES: Course[] = [
     modes: ["classroom"],
     highlights: [],
     registerUrl: "https://ibagrads.com/class-room-courses/g-mat-about/",
+    fee: 55000,
   },
   {
     id: "gre",
@@ -75,6 +84,7 @@ export const COURSES: Course[] = [
     modes: ["classroom"],
     highlights: [],
     registerUrl: "https://ibagrads.com/class-room-courses/gre-about/",
+    fee: 55000,
   },
   {
     id: "school",
@@ -83,6 +93,7 @@ export const COURSES: Course[] = [
     modes: ["online"],
     highlights: [],
     registerUrl: "https://ibagrads.com/online-courses/",
+    fee: 15000,
   },
 ];
 

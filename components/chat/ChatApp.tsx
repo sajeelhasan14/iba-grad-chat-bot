@@ -39,6 +39,12 @@ export function ChatApp() {
   const queueRef = useRef<Promise<void>>(Promise.resolve());
   // "Clear chat" bumps this, so a reply that arrives late for the old chat is ignored.
   const sessionRef = useRef(0);
+  // This chat's id on the server: admissions remember it, so payment/admin updates come back here.
+  // Created after mount (not during render) so the server-rendered HTML stays the same for everyone.
+  const chatIdRef = useRef("");
+  useEffect(() => {
+    chatIdRef.current = newId();
+  }, []);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const showToast = useCallback((text: string) => {
@@ -72,7 +78,7 @@ export function ChatApp() {
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages }),
+          body: JSON.stringify({ sessionId: chatIdRef.current, messages }),
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok || typeof data.reply !== "string") {
@@ -90,6 +96,7 @@ export function ChatApp() {
             text: data.reply,
             time: timeNow(),
             buttons: isFirstReply ? QUICK_REPLIES : undefined,
+            link: typeof data.link?.url === "string" ? data.link : undefined, // e.g. the Pay button
           },
         ]);
         if (viewRef.current === "list") setUnread((count) => count + 1);
@@ -117,11 +124,33 @@ export function ChatApp() {
 
   const clearChat = useCallback(() => {
     sessionRef.current += 1;
+    chatIdRef.current = newId();
     queueRef.current = Promise.resolve();
     setPending(0);
     setUnread(0);
     updateItems(() => INTRO);
     setChatKey((key) => key + 1);
+  }, [updateItems]);
+
+  // Messages "sent on WhatsApp" by IBAGRADS: payment received, admission confirmed by the admin...
+  // Like the original demo, the chat asks the server every 3 seconds.
+  useEffect(() => {
+    const timer = setInterval(async () => {
+      if (document.hidden || !chatIdRef.current) return;
+      try {
+        const response = await fetch(`/api/inbox?sessionId=${encodeURIComponent(chatIdRef.current)}`);
+        const { messages = [] }: { messages?: { id: string; text: string }[] } = await response.json();
+        if (!messages.length) return;
+        updateItems((previous) => [
+          ...previous,
+          ...messages.map((message) => ({ kind: "message" as const, id: message.id, side: "in" as const, text: message.text, time: timeNow() })),
+        ]);
+        if (viewRef.current === "list") setUnread((count) => count + messages.length);
+      } catch {
+        // Offline for a moment: try again on the next tick.
+      }
+    }, 3000);
+    return () => clearInterval(timer);
   }, [updateItems]);
 
   // Escape closes the business info drawer.

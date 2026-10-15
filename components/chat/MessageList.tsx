@@ -55,10 +55,11 @@ type MessageRowProps = {
 
 function MessageRow({ message, tail, onQuickReply }: MessageRowProps) {
   const buttons = message.buttons ?? [];
+  const interactive = buttons.length > 0 || !!message.link;
 
   return (
     <div className={`row ${message.side}${tail ? " tail" : ""}`}>
-      <div className={`bubble${buttons.length ? " interactive" : ""}`}>
+      <div className={`bubble${interactive ? " interactive" : ""}`}>
         {message.quote && (
           <div className="quote">
             <div className="quote-name">{BUSINESS}</div>
@@ -78,8 +79,15 @@ function MessageRow({ message, tail, onQuickReply }: MessageRowProps) {
             )}
           </span>
         </div>
-        {buttons.length > 0 && (
+        {interactive && (
           <div className="actions">
+            {message.link && (
+              // Opens in a new tab so this chat (which only lives in this tab) stays open.
+              <a className="action" href={message.link.url} target="_blank" rel="noopener">
+                <Icon id="open" />
+                {message.link.label}
+              </a>
+            )}
             {buttons.map((title) => (
               <button key={title} className="action" onClick={() => onQuickReply(title, message.text)}>
                 <Icon id="reply" />

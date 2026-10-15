@@ -12,6 +12,7 @@ export type ChatItem =
       ticks?: Ticks; // only on the student's messages
       quote?: string; // the bot message a quick-reply button belonged to
       buttons?: string[]; // quick replies, like WhatsApp interactive buttons
+      link?: { label: string; url: string }; // a link button, e.g. "💳 Pay Rs. 45,000"
     };
 
 export type MessageItem = Extract<ChatItem, { kind: "message" }>;

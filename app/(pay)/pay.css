@@ -1,0 +1,91 @@
+/* Demo checkout, in IBAGRADS colours (navy + gold from the avatar). */
+
+:root {
+  --bg: #eef2f7;
+  --surface: #ffffff;
+  --surface-2: #f5f7fb;
+  --border: #dbe3ee;
+  --text: #0f1f33;
+  --text-2: #5b6b80;
+  --brand: #12355b;
+  --brand-2: #1d4f86;
+  --brand-ink: #ffffff;
+  --gold: #f2b632;
+  --ok: #15803d;
+  --ok-bg: #dcf5e3;
+  --error: #b91c1c;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1420; --surface: #13202f; --surface-2: #192a3d; --border: #26394f; --text: #e8eef6; --text-2: #94a6bb;
+    --brand: #7fb0e8; --brand-2: #a3c6f0; --brand-ink: #0b1420; --ok: #86efac; --ok-bg: #052e16; --error: #fca5a5;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; background: var(--bg); color: var(--text);
+  font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; color: inherit; }
+.muted { color: var(--text-2); }
+.small { font-size: 13px; }
+.center { text-align: center; padding: 24px 0; }
+.error { color: var(--error); font-size: 14px; margin: 8px 0; }
+
+.page { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; padding: 16px; gap: 14px; }
+.demo-banner {
+  background: var(--gold); color: #3b2a00; font-weight: 600; font-size: 13px; padding: 6px 14px; border-radius: 200px;
+}
+.card {
+  width: min(440px, 100%); background: var(--surface); border-radius: 20px; padding: 22px;
+  box-shadow: 0 10px 30px rgba(15, 31, 51, .12); border: 1px solid var(--border);
+}
+.card-head { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.logo { border-radius: 12px; }
+.brand { font-weight: 700; font-size: 18px; color: var(--brand); letter-spacing: .3px; }
+
+.summary { padding: 14px 0; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid var(--border); }
+.row { display: flex; justify-content: space-between; gap: 16px; }
+.row span:last-child { text-align: right; font-weight: 500; }
+.total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; font-size: 16px; }
+.total strong { font-size: 24px; color: var(--brand); }
+
+.section { font-size: 14px; font-weight: 600; margin: 16px 0 10px; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; }
+.methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.method {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 6px; border-radius: 14px;
+  border: 2px solid var(--border); background: var(--surface-2); cursor: pointer; text-align: center;
+}
+.method.selected { border-color: var(--brand); background: var(--surface); box-shadow: 0 0 0 3px rgba(29, 79, 134, .15); }
+.method-icon { font-size: 22px; }
+.method-name { font-weight: 600; font-size: 14px; }
+
+.fields { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.fields label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: var(--text-2); }
+.fields input {
+  height: 44px; padding: 0 14px; border-radius: 12px; border: 2px solid var(--border); background: var(--surface);
+  font-size: 15px; font-weight: 400; color: var(--text); outline: none;
+}
+.fields input:focus { border-color: var(--brand); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.btn {
+  width: 100%; height: 50px; margin-top: 16px; border-radius: 14px; border: 2px solid var(--brand); background: transparent;
+  color: var(--brand); font-weight: 700; font-size: 16px; cursor: pointer;
+}
+.btn.primary { background: var(--brand); color: var(--brand-ink); }
+.btn.primary:hover:not(:disabled) { background: var(--brand-2); border-color: var(--brand-2); }
+.btn:disabled { opacity: .5; cursor: default; }
+
+.success { text-align: center; padding-top: 18px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.success h1 { font-size: 22px; }
+.tick {
+  width: 64px; height: 64px; border-radius: 50%; background: var(--ok-bg); color: var(--ok); font-size: 34px; font-weight: 700;
+  display: grid; place-items: center; animation: pop .3s ease-out;
+}
+@keyframes pop { from { transform: scale(.6); opacity: 0; } }
+.txn { font-family: Consolas, "Courier New", monospace; background: var(--surface-2); padding: 4px 10px; border-radius: 8px; }
+.foot { text-align: center; }
